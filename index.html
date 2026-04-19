@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Background Remover - Remove BG Instantly</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loader-container">
+            <div class="loader"></div>
+            <div class="loading-text">Removing Background...</div>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="loading-status" id="loadingStatus">Initializing AI Model...</div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <h1>
+                <i class="fas fa-cut"></i>
+                AI Background Remover
+            </h1>
+            <p class="subtitle">Remove backgrounds from images instantly with AI</p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Upload Section -->
+        <div class="upload-section" id="uploadSection">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-content">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag & Drop your image here</h3>
+                    <p>or</p>
+                    <button class="browse-btn" id="browseBtn">
+                        <i class="fas fa-folder-open"></i>
+                        Browse Files
+                    </button>
+                    <p class="file-info">Supports: JPG, PNG, WEBP • Max 10MB</p>
+                </div>
+                <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+
+            <!-- URL Upload Option -->
+            <div class="url-upload">
+                <div class="url-input-wrapper">
+                    <input type="text" id="urlInput" placeholder="Paste image URL here...">
+                    <button class="url-btn" id="urlUploadBtn">
+                        <i class="fas fa-link"></i>
+                        Upload
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sample Images -->
+            <div class="sample-section">
+                <h4>Try with sample images</h4>
+                <div class="sample-grid" id="sampleGrid">
+                    <div class="sample-item" data-sample="person">
+                        <i class="fas fa-user"></i>
+                        <span>Person</span>
+                    </div>
+                    <div class="sample-item" data-sample="product">
+                        <i class="fas fa-box"></i>
+                        <span>Product</span>
+                    </div>
+                    <div class="sample-item" data-sample="car">
+                        <i class="fas fa-car"></i>
+                        <span>Car</span>
+                    </div>
+                    <div class="sample-item" data-sample="animal">
+                        <i class="fas fa-dog"></i>
+                        <span>Animal</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Editor Section -->
+        <div class="editor-section" id="editorSection" style="display: none;">
+            <div class="editor-container">
+                <!-- Original Image -->
+                <div class="image-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-image"></i> Original</h3>
+                        <span class="image-size" id="originalSize"></span>
+                    </div>
+                    <div class="image-preview">
+                        <img id="originalImage" alt="Original">
+                        <div class="checkerboard-bg"></div>
+                    </div>
+                </div>
+
+                <!-- Removed Background Image -->
+                <div class="image-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-magic"></i> Background Removed</h3>
+                        <span class="image-size" id="removedSize"></span>
+                    </div>
+                    <div class="image-preview">
+                        <img id="removedImage" alt="Background Removed">
+                        <div class="checkerboard-bg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Slider -->
+            <div class="comparison-container" id="comparisonContainer">
+                <div class="comparison-view">
+                    <div class="comparison-original">
+                        <img id="comparisonOriginal" alt="Original">
+                    </div>
+                    <div class="comparison-removed">
+                        <img id="comparisonRemoved" alt="Removed">
+                    </div>
+                    <div class="comparison-slider" id="comparisonSlider">
+                        <div class="slider-handle" id="sliderHandle">
+                            <div class="handle-line"></div>
+                            <div class="handle-circle">
+                                <i class="fas fa-arrows-left-right"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="view-toggle">
+                    <button class="toggle-btn active" data-view="split">
+                        <i class="fas fa-columns"></i>
+                        Split View
+                    </button>
+                    <button class="toggle-btn" data-view="original">
+                        <i class="fas fa-image"></i>
+                        Original
+                    </button>
+                    <button class="toggle-btn" data-view="removed">
+                        <i class="fas fa-cut"></i>
+                        Removed
+                    </button>
+                </div>
+            </div>
+
+            <!-- Enhancement Options -->
+            <div class="enhancement-panel">
+                <h4>Background Options</h4>
+                <div class="bg-options">
+                    <div class="bg-option active" data-bg="transparent">
+                        <div class="bg-preview transparent"></div>
+                        <span>Transparent</span>
+                    </div>
+                    <div class="bg-option" data-bg="white">
+                        <div class="bg-preview white"></div>
+                        <span>White</span>
+                    </div>
+                    <div class="bg-option" data-bg="black">
+                        <div class="bg-preview black"></div>
+                        <span>Black</span>
+                    </div>
+                    <div class="bg-option" data-bg="blue">
+                        <div class="bg-preview blue"></div>
+                        <span>Blue</span>
+                    </div>
+                    <div class="bg-option" data-bg="green">
+                        <div class="bg-preview green"></div>
+                        <span>Green</span>
+                    </div>
+                    <div class="bg-option" data-bg="gradient">
+                        <div class="bg-preview gradient"></div>
+                        <span>Gradient</span>
+                    </div>
+                    <div class="bg-option custom-color">
+                        <input type="color" id="customBgColor" value="#6366f1">
+                        <label for="customBgColor">
+                            <i class="fas fa-palette"></i>
+                            Custom
+                        </label>
+                    </div>
+                </div>
+
+                <h4>Edge Refinement</h4>
+                <div class="refinement-controls">
+                    <div class="control-item">
+                        <label>
+                            <i class="fas fa-eraser"></i>
+                            Smooth Edges
+                            <span id="smoothValue">5</span>
+                        </label>
+                        <input type="range" id="smoothSlider" min="0" max="20" value="5">
+                    </div>
+                    <div class="control-item">
+                        <label>
+                            <i class="fas fa-expand"></i>
+                            Feather
+                            <span id="featherValue">2</span>
+                        </label>
+                        <input type="range" id="featherSlider" min="0" max="20" value="2">
+                    </div>
+                </div>
+
+                <!-- Manual Edit Tools -->
+                <h4>Manual Refinement</h4>
+                <div class="manual-tools">
+                    <button class="tool-btn" id="restoreBtn" data-tool="restore">
+                        <i class="fas fa-brush"></i>
+                        Restore
+                        <span class="tool-hint">Click to restore areas</span>
+                    </button>
+                    <button class="tool-btn" id="eraseBtn" data-tool="erase">
+                        <i class="fas fa-eraser"></i>
+                        Erase
+                        <span class="tool-hint">Click to remove areas</span>
+                    </button>
+                    <div class="brush-size">
+                        <label>Brush Size</label>
+                        <input type="range" id="brushSize" min="5" max="100" value="30">
+                        <span id="brushSizeValue">30</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button class="action-btn download-btn" id="downloadBtn">
+                        <i class="fas fa-download"></i>
+                        Download PNG
+                    </button>
+                    <button class="action-btn download-jpg-btn" id="downloadJpgBtn">
+                        <i class="fas fa-file-image"></i>
+                        Download JPG
+                    </button>
+                    <button class="action-btn copy-btn" id="copyBtn">
+                        <i class="fas fa-copy"></i>
+                        Copy to Clipboard
+                    </button>
+                    <button class="action-btn new-btn" id="newImageBtn">
+                        <i class="fas fa-plus"></i>
+                        New Image
+                    </button>
+                    <button class="action-btn remove-btn" id="removeBgBtn">
+                        <i class="fas fa-magic"></i>
+                        Remove Background
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2>Why Choose Our Background Remover?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <i class="fas fa-brain"></i>
+                <h3>AI-Powered</h3>
+                <p>Advanced AI accurately detects and removes backgrounds</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-bolt"></i>
+                <h3>Lightning Fast</h3>
+                <p>Remove backgrounds in seconds</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-lock"></i>
+                <h3>Privacy First</h3>
+                <p>All processing done locally in your browser</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-paint-brush"></i>
+                <h3>Manual Refinement</h3>
+                <p>Fine-tune results with brush tools</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <h3>URL Upload</h3>
+                <p>Remove background from any image URL</p>
+            </div>
+            <div class="feature-card">
+                <i class="fas fa-download"></i>
+                <h3>High Quality</h3>
+                <p>Download in PNG or JPG format</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 AI Background Remover. All rights reserved.</p>
+        <p>Made with <i class="fas fa-heart"></i> for the community By Naim Xbz</p>
+    </footer>
+
+    <!-- Background Removal Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/dist/background-removal.umd.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
